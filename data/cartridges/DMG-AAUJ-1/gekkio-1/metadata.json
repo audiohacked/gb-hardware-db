@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-KFDN-10",
     "circled_letters": "K",
-    "extra_label": "4",
+    "panel_position": "4",
     "year": 1999,
     "month": 10,
     "u1": {
@@ -25,6 +25,16 @@
     "u4": {
       "label": "944 134A"
     },
-    "x1": {}
+    "x1": {
+      "label": "KDS9H"
+    },
+    "battery": {
+      "label": "99-10"
+    }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-06",
+    "sha256": "27a07a1d3faf9c6a0b1b60d5e88ee3a4159a751a47b4c46ab09f1202d52bac3e"
   }
 }

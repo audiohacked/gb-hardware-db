@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-TFDN-01",
     "circled_letters": "I",
-    "extra_label": "6",
+    "panel_position": "6",
     "year": 1999,
     "month": 2,
     "u1": {
@@ -24,6 +24,14 @@
     },
     "u4": {
       "label": "846 26A"
+    },
+    "battery": {
+      "label": "98-12"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-07",
+    "sha256": "9d9af105172d5b72d9c1e7ca09fc56cde33c607d840932b465ae2a5221c2f4a8"
   }
 }

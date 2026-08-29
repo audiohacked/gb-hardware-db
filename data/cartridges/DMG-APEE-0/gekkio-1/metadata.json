@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-KFDN-01",
     "circled_letters": "I",
-    "extra_label": "1",
+    "panel_position": "1",
     "year": 1998,
     "month": 8,
     "u1": {
@@ -24,6 +24,15 @@
     },
     "u4": {
       "label": "749 26A"
+    },
+    "battery": {
+      "label": "98-06",
+      "manufacturer": "Maxell"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-07",
+    "sha256": "2a951313c2640e8c2cb21f25d1db019ae6245d9c7121f754fa61afd7bee6452d"
   }
 }

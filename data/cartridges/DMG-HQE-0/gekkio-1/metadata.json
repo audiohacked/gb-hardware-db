@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-BEAN-02",
     "circled_letters": "B",
-    "extra_label": "3",
+    "panel_position": "3",
     "year": 1991,
     "month": 2,
     "u1": {
@@ -19,5 +19,10 @@
     "u2": {
       "label": "DMG MBC1B Nintendo S 9109 1 A"
     }
+  },
+  "dump": {
+    "tool": "Gameboy Cart Shield V1.2 + custom software",
+    "date": "2016-10-02",
+    "sha256": "4424900339aad0514538250aaea1d407869dad2b0df7310b8ce778de8c35c5c3"
   }
 }

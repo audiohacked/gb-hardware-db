@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-DECN-10",
     "circled_letters": "I",
-    "extra_label": "6",
+    "panel_position": "6",
     "year": 1997,
     "month": 11,
     "u1": {
@@ -24,6 +24,15 @@
     },
     "u4": {
       "label": "743 26A"
+    },
+    "battery": {
+      "label": "97-11",
+      "manufacturer": "Panasonic"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-07",
+    "sha256": "69ae10262dd7c5f3e55ed94a2b549e47de4c9e2ba4c2fa022ef234a882890519"
   }
 }

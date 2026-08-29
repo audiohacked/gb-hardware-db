@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-MC-SFCN-01",
     "circled_letters": "Y",
-    "extra_label": "2",
+    "panel_position": "2",
     "year": 1996,
     "month": 10,
     "u1": {
@@ -24,6 +24,10 @@
     },
     "u4": {
       "label": "642 26A"
+    },
+    "battery": {
+      "label": "96-10",
+      "manufacturer": "Panasonic"
     }
   }
 }

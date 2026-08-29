@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-BEAN-01",
     "circled_letters": "B",
-    "extra_label": "5",
+    "panel_position": "5",
     "year": 1990,
     "month": 11,
     "u1": {
@@ -19,5 +19,10 @@
     "u2": {
       "label": "DMG MBC1-B Nintendo P 0'09"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-07",
+    "sha256": "d671e54e6de85e5a5259ed4167dd46d382aee94a6ea10c849071c86bd070f824"
   }
 }

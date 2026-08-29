@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-MC-DFCN-01",
     "circled_letters": "I",
-    "extra_label": "5",
+    "panel_position": "5",
     "year": 1996,
     "month": 7,
     "u1": {
@@ -20,10 +20,18 @@
       "label": "DMG MBC1-B Nintendo P 6'61"
     },
     "u3": {
-      "label": "LH5268ANF-10PLL MOSEL-VITELIC JAPAN N526 0H 8C"
+      "label": "LH5268ANF-10PLL MOSEL-VITELIC JAPAN N526 0H BC"
     },
     "u4": {
       "label": "624 26A"
+    },
+    "battery": {
+      "label": "96-06"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-06",
+    "sha256": "db3a45363490b8cb56274f260358c7b8dc0ffc0a41517123d6c5d78c2c54dc38"
   }
 }

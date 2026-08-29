@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-A08-01",
     "circled_letters": "I",
-    "extra_label": "1",
+    "panel_position": "1",
     "year": 2000,
     "month": 5,
     "u1": {
@@ -24,6 +24,15 @@
     },
     "u4": {
       "label": "019 134A"
+    },
+    "battery": {
+      "label": "00-06",
+      "manufacturer": "Maxell"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-06",
+    "sha256": "e2cc3edffd34277ab9af404b4c160431aa1389ddc2c7b15a1273c3a58cd83c70"
   }
 }

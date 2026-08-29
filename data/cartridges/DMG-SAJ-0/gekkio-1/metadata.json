@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-GDAN-01",
     "circled_letters": "I",
-    "extra_label": "1",
+    "panel_position": "1",
     "year": 1989,
     "month": 3,
     "u1": {
@@ -21,6 +21,15 @@
     },
     "u3": {
       "label": "015 26A"
+    },
+    "battery": {
+      "label": "90-02",
+      "manufacturer": "Maxell"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-06",
+    "sha256": "c2f40e3ed1dcd4b6682dd19537d93ac4145ad754d1c6fd77581d09826f06f45c"
   }
 }

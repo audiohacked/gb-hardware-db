@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-A06-01",
     "circled_letters": "K",
-    "extra_label": "1",
+    "panel_position": "1",
     "year": 2000,
     "month": 11,
     "u1": {
@@ -24,6 +24,15 @@
     },
     "u4": {
       "label": "047 134A"
+    },
+    "battery": {
+      "label": "00-08",
+      "manufacturer": "Sony"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-06",
+    "sha256": "fafb25d3ce6a296060c234e93b9496ac3a8beee3f11b2d7a8bac2f79a2c0c9cc"
   }
 }

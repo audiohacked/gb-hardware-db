@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-MHEU-01",
     "circled_letters": "MB",
-    "extra_label": "3",
+    "panel_position": "3",
     "year": 2000,
     "month": 10,
     "u1": {
@@ -27,6 +27,14 @@
     },
     "x1": {
       "label": "KDS0J"
+    },
+    "battery": {
+      "label": "00-11"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-07",
+    "sha256": "136ada06cb68656b7de475fa4b278d37dbeff8f5257e7dfdf7f4a4aec19a90f3"
   }
 }

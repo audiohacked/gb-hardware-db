@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-GDAN-10",
     "circled_letters": "I",
-    "extra_label": "5",
+    "panel_position": "5",
     "year": 1997,
     "month": 7,
     "u1": {
@@ -21,6 +21,14 @@
     },
     "u3": {
       "label": "6129A 7727"
+    },
+    "battery": {
+      "manufacturer": "Maxell"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-06",
+    "sha256": "b53d63abbf384609c7e082714d6e9c4e543d189102969530d36326c551f24b72"
   }
 }

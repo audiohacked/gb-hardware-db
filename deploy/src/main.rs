@@ -1,20 +1,38 @@
-use anyhow::{anyhow, Error};
-use chrono::{DateTime, FixedOffset, Utc};
+// SPDX-FileCopyrightText: 2017-2023 Joonas Javanainen <joonas.javanainen@gmail.com>
+//
+// SPDX-License-Identifier: MIT
+
+use anyhow::{Error, anyhow};
+use aws_config::BehaviorVersion;
+use aws_sdk_s3::primitives::ByteStream;
+use base64::Engine;
 use log::{debug, info};
 use md5::{Digest, Md5};
 use rayon::prelude::*;
-use rusoto_core::Region;
-use rusoto_s3::{DeleteObjectRequest, ListObjectsV2Request, PutObjectRequest, S3Client, S3};
 use simplelog::{ColorChoice, LevelFilter, TermLogger, TerminalMode};
-use std::collections::BTreeMap;
-use std::fs::File;
-use std::io::{self, BufReader};
-use std::path::{Path, PathBuf};
-use std::str;
-use std::sync::Arc;
+use std::{
+    collections::{BTreeMap, HashMap},
+    fs::File,
+    io::{self, BufReader},
+    path::{Path, PathBuf},
+    str,
+};
+use time::{Duration, OffsetDateTime};
 use tokio::task::spawn_blocking;
 use walkdir::{DirEntry, WalkDir};
-use xdg_mime::SharedMimeInfo;
+
+static MIME_MAPPING: &[(&str, &str)] = &[
+    ("html", "text/html"),
+    ("png", "image/png"),
+    ("jpg", "image/jpeg"),
+    ("css", "text/css"),
+    ("csv", "text/csv"),
+    ("svg", "image/svg+xml"),
+    ("txt", "text/plain"),
+    ("ico", "image/vnd.microsoft.icon"),
+    ("xml", "application/xml"),
+    ("webmanifest", "application/manifest+json"),
+];
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct LocalFile {
@@ -48,7 +66,7 @@ impl LocalFile {
 struct RemoteFile {
     key: String,
     len: u64,
-    last_modified: Option<DateTime<FixedOffset>>,
+    last_modified: Option<OffsetDateTime>,
     e_tag: Option<[u8; 16]>,
 }
 
@@ -85,10 +103,10 @@ fn scan_local_files(root: &Path) -> Result<Vec<LocalFile>, Error> {
         entries.push(entry);
     }
 
-    Ok(entries
+    entries
         .into_par_iter()
         .map(|entry| scan_local_file(root, &entry))
-        .collect::<Result<Vec<_>, _>>()?)
+        .collect::<Result<Vec<_>, _>>()
 }
 
 fn parse_e_tag(e_tag: &str) -> Option<[u8; 16]> {
@@ -102,34 +120,25 @@ fn parse_e_tag(e_tag: &str) -> Option<[u8; 16]> {
     Some(result)
 }
 
-async fn scan_remote_files<S: S3>(s3: &S, bucket: &str) -> Result<Vec<RemoteFile>, Error> {
-    let mut continuation_token = None;
+async fn scan_remote_files(
+    s3: &aws_sdk_s3::Client,
+    bucket: &str,
+) -> Result<Vec<RemoteFile>, Error> {
     let mut result = Vec::new();
-    loop {
-        let output = s3
-            .list_objects_v2(ListObjectsV2Request {
-                bucket: bucket.to_owned(),
-                continuation_token: continuation_token.clone(),
-                ..ListObjectsV2Request::default()
-            })
-            .await?;
-        if let Some(contents) = output.contents {
-            for obj in contents {
-                if let (Some(key), Some(size)) = (obj.key, obj.size) {
-                    result.push(RemoteFile {
-                        key,
-                        len: size as u64,
-                        last_modified: obj
-                            .last_modified
-                            .and_then(|timestamp| DateTime::parse_from_rfc3339(&timestamp).ok()),
-                        e_tag: obj.e_tag.and_then(|e_tag| parse_e_tag(&e_tag)),
-                    });
-                }
+    let mut stream = s3.list_objects_v2().bucket(bucket).into_paginator().send();
+    while let Some(page) = stream.next().await {
+        let page = page?;
+        for obj in page.contents() {
+            if let (Some(key), Some(size)) = (obj.key(), obj.size()) {
+                result.push(RemoteFile {
+                    key: key.to_owned(),
+                    len: size as u64,
+                    last_modified: obj.last_modified.and_then(|timestamp| {
+                        OffsetDateTime::from_unix_timestamp_nanos(timestamp.as_nanos()).ok()
+                    }),
+                    e_tag: obj.e_tag.as_ref().and_then(|e_tag| parse_e_tag(e_tag)),
+                });
             }
-        }
-        continuation_token = output.next_continuation_token;
-        if continuation_token.is_none() {
-            break;
         }
     }
     Ok(result)
@@ -144,7 +153,11 @@ async fn main() -> Result<(), Error> {
         ColorChoice::Auto,
     );
 
-    let build_dir = Path::new("build/site");
+    let bucket = std::env::var("S3_BUCKET")?;
+    let endpoint = std::env::var("S3_ENDPOINT")?;
+    let mime_map = MIME_MAPPING.iter().copied().collect::<HashMap<_, _>>();
+
+    let build_dir = Path::new("build");
     if !build_dir.exists() {
         return Err(anyhow!("Can't find build directory"));
     }
@@ -152,11 +165,15 @@ async fn main() -> Result<(), Error> {
     let local_files = spawn_blocking(move || scan_local_files(build_dir)).await??;
     info!("Scanned {} local files", local_files.len());
 
-    let s3 = S3Client::new(Region::EuWest1);
-    let bucket = "gbhwdb.gekkio.fi";
+    let config = aws_config::load_defaults(BehaviorVersion::latest())
+        .await
+        .into_builder()
+        .endpoint_url(endpoint)
+        .build();
+    let s3 = aws_sdk_s3::Client::new(&config);
 
     info!("Scanning remote files...");
-    let remote_files = scan_remote_files(&s3, bucket).await?;
+    let remote_files = scan_remote_files(&s3, &bucket).await?;
     info!("Scanned {} remote files", remote_files.len());
 
     info!("Building deployment plan...");
@@ -170,7 +187,7 @@ async fn main() -> Result<(), Error> {
         .collect();
 
     let mut to_upload = Vec::new();
-    for (key, local_file) in local_index.iter() {
+    for (&key, &local_file) in local_index.iter() {
         if let Some(remote_file) = remote_index.get(key) {
             if remote_file.e_tag == Some(local_file.md5) {
                 debug!("Skipping local file {}: remote match found", key);
@@ -186,60 +203,50 @@ async fn main() -> Result<(), Error> {
     info!("{} files scheduled for upload", to_upload.len());
 
     let mut to_delete = Vec::new();
-    for (key, remote_file) in remote_index.iter() {
+    for (&key, &remote_file) in remote_index.iter() {
         if local_index.contains_key(key) {
             continue;
         }
         if let Some(last_modified) = remote_file.last_modified {
-            let elapsed = Utc::now().signed_duration_since(last_modified);
-            if elapsed > chrono::Duration::weeks(4) {
+            let elapsed = OffsetDateTime::now_utc() - last_modified;
+            if elapsed > Duration::weeks(4) {
                 to_delete.push(remote_file);
             }
         }
     }
     info!("{} files scheduled for deletion", to_delete.len());
 
-    let shared_mime_info = Arc::new(spawn_blocking(SharedMimeInfo::new).await?);
+    let base64 = base64::engine::general_purpose::STANDARD;
 
     for local_file in to_upload {
+        let ext = local_file
+            .absolute_path
+            .extension()
+            .and_then(|s| s.to_str())
+            .ok_or_else(|| anyhow!("Invalid file extension: {}", local_file.key))?;
+        let mime = mime_map
+            .get(ext)
+            .ok_or_else(|| anyhow!("Failed to detect MIME type of {}", local_file.key))?;
         info!("Uploading {}", local_file.key);
-        let body = tokio::fs::read(&local_file.absolute_path).await?;
-        let (body, mime_guess) = {
-            let shared_mime_info = Arc::clone(&shared_mime_info);
-            let absolute_path = local_file.absolute_path.clone();
-            spawn_blocking(move || {
-                let guess = shared_mime_info
-                    .guess_mime_type()
-                    .path(absolute_path)
-                    .data(&body)
-                    .guess();
-                (body, guess)
-            })
-            .await?
-        };
-        if mime_guess.uncertain() {
-            return Err(anyhow!("Failed to guess MIME type for {}", local_file.key));
-        }
-        s3.put_object(PutObjectRequest {
-            bucket: bucket.to_owned(),
-            key: local_file.key.clone(),
-            body: Some(body.into()),
-            content_type: Some(mime_guess.mime_type().essence_str().to_owned()),
-            content_md5: Some(base64::encode(local_file.md5)),
-            cache_control: Some(local_file.cache_control().to_owned()),
-            ..PutObjectRequest::default()
-        })
-        .await?;
+        let body = ByteStream::from_path(&local_file.absolute_path).await?;
+        s3.put_object()
+            .bucket(&bucket)
+            .key(&local_file.key)
+            .body(body)
+            .content_type(*mime)
+            .content_md5(base64.encode(local_file.md5))
+            .cache_control(local_file.cache_control())
+            .send()
+            .await?;
     }
 
     for remote_file in to_delete {
         info!("Deleting {}", remote_file.key);
-        s3.delete_object(DeleteObjectRequest {
-            bucket: bucket.to_owned(),
-            key: remote_file.key.clone(),
-            ..DeleteObjectRequest::default()
-        })
-        .await?;
+        s3.delete_object()
+            .bucket(&bucket)
+            .key(&remote_file.key)
+            .send()
+            .await?;
     }
 
     info!("Site deployment complete");

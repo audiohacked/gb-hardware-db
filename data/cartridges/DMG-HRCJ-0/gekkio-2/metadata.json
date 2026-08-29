@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-UFDT-01",
     "circled_letters": "I",
-    "extra_label": "2",
+    "panel_position": "2",
     "year": 1998,
     "month": 11,
     "u1": {
@@ -28,6 +28,13 @@
     "u5": {
       "label": "LVX 04 8 24"
     },
-    "x1": {}
+    "x1": {
+      "label": "KDS8K"
+    }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-07",
+    "sha256": "a0bafdead828c50ec412293b0d004c78564c3ae8ae5f295c2b46e6ed4e0d4818"
   }
 }

@@ -9,12 +9,11 @@
   "board": {
     "label": "DMG-A07-01",
     "circled_letters": "I",
-    "extra_label": "1",
+    "panel_position": "1",
     "year": 2001,
     "month": 2,
     "u1": {
       "label": "CGB-BVBP-0 F1 M538011E-2Q 1085419"
-    },
-    "u2": {}
+    }
   }
 }

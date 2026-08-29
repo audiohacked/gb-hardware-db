@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-A08-10",
     "circled_letters": "YG",
-    "extra_label": "1",
+    "panel_position": "1",
     "year": 2001,
     "month": 4,
     "u1": {
@@ -24,6 +24,15 @@
     },
     "u4": {
       "label": "043 134A"
+    },
+    "battery": {
+      "label": "01-01",
+      "manufacturer": "Panasonic"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-06",
+    "sha256": "6680858cfdcc658e4b1e10d49f48b0f4abfdba10cd52007cde64744036eadff4"
   }
 }

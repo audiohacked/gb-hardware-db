@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-GDAN-03",
     "circled_letters": "I",
-    "extra_label": "3",
+    "panel_position": "3",
     "year": 1993,
     "month": 2,
     "u1": {
@@ -21,6 +21,15 @@
     },
     "u3": {
       "label": "6129 3443"
+    },
+    "battery": {
+      "label": "93-01",
+      "manufacturer": "Panasonic"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-07",
+    "sha256": "f35451551384f5a72037e39b838c65559fa82014569f1f3cc107c2f58043f609"
   }
 }

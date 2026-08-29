@@ -1,0 +1,127 @@
+/*
+ * SPDX-FileCopyrightText: 2017-2023 Joonas Javanainen <joonas.javanainen@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+@import 'common';
+@import 'template/game_page';
+@import 'template/game_platform_page';
+@import 'template/listing_entry_cell';
+@import 'template/listing_part';
+@import 'template/mapper_page';
+@import 'template/site_footer';
+@import 'template/site_header';
+@import 'template/submission_list';
+@import 'template/submission_part';
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #fff;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  color: #000;
+  background-color: $main-color-1;
+}
+
+a {
+  text-decoration: underline dotted #000;
+
+  &.external::before {
+    content: "🔗 ";
+    display: inline-block;
+  }
+}
+
+.site-main {
+  margin: 0 auto;
+  max-width: 1440px;
+  padding: 0 10px;
+
+  &__content {
+    min-height: 50px;
+    padding: 1px 10px 20px;
+    background-color: #fff;
+    color: $main-color-4;
+    overflow-x: auto;
+    box-shadow: 0 2px 5px 2px $main-color-2;
+
+    @include media(desktop) {
+      overflow-x: inherit;
+    }
+  }
+}
+
+table {
+  width: 100%;
+  font-size: 12px;
+  margin: 15px 0;
+  border-collapse: collapse;
+  border: 1px $main-color-2 solid;
+  box-shadow: 0 1px 2px $main-color-2;
+}
+td,
+th {
+  padding: 5px;
+  text-align: left;
+}
+thead > tr,
+thead > tr > th {
+  color: #fff;
+  background-color: $main-color-3;
+}
+thead > tr > th {
+  position: sticky;
+  top: -1px;
+}
+tbody > tr:nth-child(even of :not([hidden])) {
+  background-color: #f0f0f0;
+}
+
+.page-console,
+.page-cartridge {
+  &__photo {
+    img {
+      vertical-align: middle;
+      max-width: 50%;
+      max-height: 200px;
+
+      @include media(tablet) {
+        max-height: 260px;
+      }
+
+      @include media(desktop) {
+        max-height: 400px;
+      }
+    }
+  }
+}
+
+.page-cartridge {
+  &__dump-hash {
+    display: inline;
+    margin: 0;
+    padding: 0;
+  }
+  &__dump-log {
+    font-size: 0.8em;
+    line-height: 1;
+  }
+}
+
+.cartridges__mapper-list {
+  display: flex;
+  gap: 10px;
+  padding: 0;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  > li {
+    list-style: none;
+  }
+}

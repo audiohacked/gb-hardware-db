@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-DGCU-01",
     "circled_letters": "Y",
-    "extra_label": "5",
+    "panel_position": "5",
     "year": 1998,
     "month": 8,
     "u1": {
@@ -24,6 +24,15 @@
     },
     "u4": {
       "label": "748 26A"
+    },
+    "battery": {
+      "label": "98-05",
+      "manufacturer": "Panasonic"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-05-23",
+    "sha256": "2f2081e6907ae0ac5d171ceb977b5367fc6c5842b0eb73528733a7fa1e42d55b"
   }
 }

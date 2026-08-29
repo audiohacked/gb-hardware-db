@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-LFDN-01",
     "circled_letters": "I",
-    "extra_label": "1",
+    "panel_position": "1",
     "year": 1998,
     "month": 5,
     "u1": {
@@ -24,6 +24,15 @@
     },
     "u4": {
       "label": "6129A 8316"
+    },
+    "battery": {
+      "label": "98-02",
+      "manufacturer": "Panasonic"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-07",
+    "sha256": "e95a791b521c23792a3eecdaed73dfbcc98938980223796e6d2bbdf64f0fc63d"
   }
 }

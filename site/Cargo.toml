@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2017-2023 Joonas Javanainen <joonas.javanainen@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+[package]
+name = "gbhwdb-site"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+csv.workspace = true
+filetime.workspace = true
+gbhwdb-model.workspace = true
+glob.workspace = true
+grass.workspace = true
+image = { workspace = true, features = ["jpeg", "rayon"] }
+itertools.workspace = true
+lexical-sort.workspace = true
+log.workspace = true
+maud.workspace = true
+pulldown-cmark.workspace = true
+rayon.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+simplelog.workspace = true
+slug.workspace = true
+strum.workspace = true
+swc_common = { workspace = true, features = ["sourcemap"] }
+swc_css = { workspace = true, features = ["minifier"] }
+time = { workspace = true, features = ["formatting", "macros", "local-offset"] }
+urlencoding.workspace = true
+walkdir.workspace = true

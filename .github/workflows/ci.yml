@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2017-2023 Joonas Javanainen <joonas.javanainen@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 name: ci
 on:
   pull_request:
@@ -5,155 +9,45 @@ on:
     branches:
     - master
 
-env:
-  RUSTC_WRAPPER: sccache
-  SCCACHE_VERSION: 0.2.15
-  SCCACHE_SHA256: e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca
+concurrency: 
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  build_only:
-    name: Build site
+  build:
+    name: Build site (+ deploy if building master)
     runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/master'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           lfs: true
-      - name: Install Ubuntu packages
-        run: sudo apt install libncurses-dev libncursesw5-dev
+      - name: Check for unintended local changes (e.g. incorrect use of Git LFS)
+        run: git diff --exit-code
       - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-      - uses: actions/cache@v2
-        with:
-          path: /home/runner/.cache/sccache
-          key: ${{ runner.os }}-sccache-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-sccache-
-      - name: Install sccache
         run: |
-          .github/scripts/install-sccache.sh
-          echo "$HOME/sccache/bin" >> $GITHUB_PATH
-      - name: Install Node.js
-        uses: actions/setup-node@v1
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0
         with:
-          node-version: 14.x
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - name: Run cargo build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --all --release
-      - name: Run cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all --release
-      - name: Print sccache stats
-        run: sccache --show-stats
-      - name: Stop sccache server
-        run: sccache --stop-server || true
-      - name: Run site generation (Rust)
-        run: cargo run --release --bin gbhwdb-site-generator
-      - name: Run npm install
-        run: npm install
-      - name: Run site generation (Node)
-        run: npm run build
-  build_and_deploy:
-    name: Build + deploy site
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    env:
-      RUSTC_WRAPPER: /home/runner/sccache/sccache
-      SCCACHE_VERSION: 0.2.15
-      SCCACHE_SHA256: e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-      - name: Install Ubuntu packages
-        run: sudo apt install libncurses-dev libncursesw5-dev
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-      - uses: actions/cache@v2
-        with:
-          path: /home/runner/.cache/sccache
-          key: ${{ runner.os }}-sccache-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-sccache-
-      - name: Install sccache
-        run: |
-          .github/scripts/install-sccache.sh
-          echo "$HOME/sccache/bin" >> $GITHUB_PATH
-      - name: Install Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - name: Run cargo build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --all --release
-      - name: Run cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all --release
-      - name: Print sccache stats
-        run: sccache --show-stats
-      - name: Stop sccache server
-        run: sccache --stop-server || true
-      - name: Run site generation (Rust)
-        run: cargo run --release --bin gbhwdb-site-generator
-      - name: Run npm prune
-        run: npm prune
-      - name: Run npm install
-        run: npm install
-      - name: Run site generation (Node)
-        run: npm run build
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-1
+          cache-on-failure: true
+      - name: Build
+        run: cargo build --all --release
+      - name: Test
+        run: cargo test --all --release
+      - name: Run site generation
+        run: cargo run --release --bin gbhwdb-site
       - name: Run site deployment
-        run: cargo run --release --bin gbhwdb-deploy
+        if: github.ref == 'refs/heads/master' && github.repository == 'Gekkio/gb-hardware-db'
+        run: target/release/gbhwdb-deploy
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}

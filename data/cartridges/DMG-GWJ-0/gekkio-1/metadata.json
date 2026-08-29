@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-DECN-01",
     "circled_letters": "I",
-    "extra_label": "1",
+    "panel_position": "1",
     "year": 1991,
     "month": 3,
     "u1": {
@@ -24,6 +24,15 @@
     },
     "u4": {
       "label": "135 26A"
+    },
+    "battery": {
+      "label": "91-05",
+      "manufacturer": "Maxell"
     }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-06",
+    "sha256": "0727cb5e298e1f87f757471b558965a2b8dfb01a5b8bffe7cce5a625673b55ef"
   }
 }

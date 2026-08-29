@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-DECN-10",
     "circled_letters": "I",
-    "extra_label": "6",
+    "panel_position": "6",
     "year": 1998,
     "month": 7,
     "u1": {
@@ -24,6 +24,15 @@
     },
     "u4": {
       "label": "835 26A"
+    },
+    "battery": {
+      "label": "97-05",
+      "manufacturer": "Maxell"
     }
+  },
+  "dump": {
+    "tool": "Gameboy Cart Shield V1.2 + custom software",
+    "date": "2019-05-04",
+    "sha256": "d5162631a4e9be122013fb491f2a3d04b72476cc4c052607d3bc9e9e5250e850"
   }
 }

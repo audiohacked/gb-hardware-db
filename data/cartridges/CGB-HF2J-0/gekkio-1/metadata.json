@@ -10,7 +10,7 @@
   "board": {
     "label": "DMG-UGDU-01",
     "circled_letters": "I",
-    "extra_label": "6",
+    "panel_position": "6",
     "year": 1999,
     "month": 7,
     "u1": {
@@ -28,6 +28,13 @@
     "u5": {
       "label": "LVX 04 9 26"
     },
-    "x1": {}
+    "x1": {
+      "label": "KDS8M"
+    }
+  },
+  "dump": {
+    "tool": "GB-CARTPP v1.0",
+    "date": "2022-09-07",
+    "sha256": "52fe71ead929f54dd6706d5482becb033fd00fa35433769407136ab1296ec36a"
   }
 }
